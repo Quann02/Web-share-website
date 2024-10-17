@@ -1,2 +1,3 @@
-# express-starter
-This is a starter project for Express. It was created with the express project generator and then modified to be a module type (uses imports instead of requires, based on this tutorial), and with VSCode launch settings.
+## To kill the port 3000 and restart reaect do 
+## isof -i :3000 {too look at the port}
+## then do kill -9 15520
