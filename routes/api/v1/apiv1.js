@@ -4,7 +4,7 @@ import { parse } from 'node-html-parser';
 
 const router = express.Router();
 
-router.get('/', function(req, res, next) {
+router.get('/', (req, res) => {
   res.send('API v1 is working');
 });
 
@@ -12,8 +12,7 @@ router.get('/urls/preview', async (req, res) => {
   try {
     const url = req.query.url;
 
-    // Validate URL
-    if (!url || typeof url !== 'string' || !url.startsWith('http')) {
+    if (!url || !url.startsWith('http')) {
       return res.status(400).send('Invalid URL');
     }
 
@@ -21,25 +20,37 @@ router.get('/urls/preview', async (req, res) => {
     const html = await response.text();
     const root = parse(html);
 
-    // Optional chaining for null safety
-    const ogUrl = root.querySelector('meta[property="og:url"]');
-    const ogTitle = root.querySelector('meta[property="og:title"]');
-    const ogImage = root.querySelector('meta[property="og:image"]');
-    const ogDescription = root.querySelector('meta[property="og:description"]');
+    const favicon = root.querySelector('link[rel="icon"]')?.getAttribute('href') || '';
+    let faviconUrl = favicon;
 
-    let previewHtml = `
-      <div class="preview-box">
-        <img src="${ogImage?.getAttribute('content') || ''}" alt="Preview Image">
-        <h2>${ogTitle?.getAttribute('content') || ''}</h2>
-        ${ogDescription?.getAttribute('content') ? `<p>${ogDescription.getAttribute('content')}</p>` : ''}
-        <a href="${ogUrl?.getAttribute('content') || ''}">Visit ${ogUrl?.getAttribute('content') || ''}</a>
+    if (favicon && !favicon.startsWith('http')) {
+      const baseUrl = new URL(url);
+      faviconUrl = `${baseUrl.origin}${favicon}`;
+    }
+
+    const ogTitle = root.querySelector('meta[property="og:title"]')?.getAttribute('content') || root.querySelector('title')?.text || url;
+    const ogDescription = root.querySelector('meta[property="og:description"]')?.getAttribute('content') || '';
+    let imageUrl = root.querySelector('meta[property="og:image"]')?.getAttribute('content') || root.querySelector('img')?.getAttribute('src');
+    
+    if (imageUrl && !imageUrl.startsWith('http')) {
+      const baseUrl = new URL(url);
+      imageUrl = `${baseUrl.origin}${imageUrl}`;
+    }
+
+    const previewHtml = `
+      <div style="max-width: 300px; border: 1px solid; padding: 10px; text-align: center; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 8px;">
+        ${faviconUrl ? `<img src="${faviconUrl}" alt="Favicon" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 5px;">` : ''}
+        ${imageUrl ? `<img src="${imageUrl}" alt="Preview Image" style="max-height: 200px; max-width: 270px; display: block; margin: 10px auto;">` : ''}
+        <h2><a href="${url}" style="color: #007BFF; text-decoration: none;">${ogTitle}</a></h2>
+        ${ogDescription ? `<p style="font-size: 14px; color: #555;">${ogDescription}</p>` : ''}
       </div>
     `;
-    
+
     res.header('Content-Type', 'text/html');
     res.send(previewHtml);
+
   } catch (error) {
-    console.error(error);
+    console.error('Error processing URL:', error);
     res.status(500).send('Error processing URL');
   }
 });
