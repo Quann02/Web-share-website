@@ -1,13 +1,20 @@
-## Additional Information Added
-- I included the website’s favicon in the preview if available. This is retrieved from the `<link rel="icon">` tag in the webpage's HTML.
+Assignment 3 
 
-### Example URL
-- Use the following URL to see the favicon included: [https://www.bbc.com](https://www.bbc.com).
+Added a new feature called "time posted" that shows the exact time when each post was created. This helps users see when something was posted, which makes it more interesting and gives some extra context to each post.
 
-## Visual Style Improvements
-- I added a subtle box-shadow and rounded corners to the preview box to enhance visual appeal.
-- Included the favicon icon next to the title for a quick visual reference to the website’s branding.
-- Improved text readability with consistent font sizes and color choices.
+Visual Changes
+* When submit the url and link, there would be a time that would be displayed. 
 
+--------------------
 
-## Render website https://websharer-quann02.onrender.com 
+Additional Information Extracted
+Favicon Extraction
+* Description: The previewer extracts and displays the favicon of the webpage, helping users quickly recognize the website through its icon.
+* Example URL: https://www.wikipedia.org/
+
+Visual Style Changes
+* Box Shadow: Added to give depth and make the preview stand out.
+* Rounded Corners: Applied for a smoother, modern look.
+* Spacing and Alignment: Adjusted for better readability.
+* Font Styling: Increased title font size and improved colors for contrast.
+# Web-share-website
